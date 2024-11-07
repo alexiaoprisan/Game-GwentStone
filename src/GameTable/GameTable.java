@@ -98,6 +98,17 @@ public class GameTable {
             for (Minion minion : row) {
                 minion.hasAttackedThisTurn = false;
                 minion.usedAbilityThisTurn = false;
+            }
+        }
+        playerOne.getHero().hasUsedAbility = false;
+        playerTwo.getHero().hasUsedAbility = false;
+
+    }
+
+    public void unfreezeMinions(Player playerOne, Player playerTwo) {
+        for (int i = 0; i < MAX_ROW; ++i) {
+            List<Minion> row = table.get(i);
+            for (Minion minion : row) {
                 if ((i == 0 || i == 1) && playerTwo.isActive()) {
                     minion.setIsFrozen(false);
                 } else if ((i == 2 || i == 3) && playerOne.isActive()) {
@@ -105,11 +116,6 @@ public class GameTable {
                 }
             }
         }
-
-
-        playerOne.getHero().hasUsedAbility = false;
-        playerTwo.getHero().hasUsedAbility = false;
-
     }
 
     public void getTableOutput(ArrayNode output) {
@@ -193,6 +199,13 @@ public class GameTable {
             minion.isFrozen = true;
             minion.setIsFrozen(true);
             minion.freeze();
+        }
+    }
+
+    public void clearTable() {
+        for (int i = 0; i < MAX_ROW; ++i) {
+            List<Minion> row = table.get(i);
+            row.clear();
         }
     }
 

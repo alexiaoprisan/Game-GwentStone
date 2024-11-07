@@ -22,11 +22,11 @@ import java.util.ArrayList;
 public class Abilities {
 
     public void weakKnees(Minion attacker, Minion victim) {
-        if(victim.getAttackDamage() - attacker.getAttackDamage() <= 0) {
+        if(victim.getAttackDamage() < 2) {
             victim.setAttackDamage(0);
         }
         else {
-            victim.setAttackDamage(victim.getAttackDamage() - attacker.getAttackDamage());
+            victim.setAttackDamage(victim.getAttackDamage() - 2);
         }
     }
 
@@ -47,7 +47,7 @@ public class Abilities {
         victim.setHealth(aux);
 
         if(victim.getHealth() == 0) {
-            // gameTable.removeCard(row, col);
+            gameTable.removeCard(row, col);
         }
     }
 

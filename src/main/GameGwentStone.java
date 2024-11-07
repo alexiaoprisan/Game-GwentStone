@@ -26,6 +26,9 @@ public class GameGwentStone {
     GameTable gameTable = new GameTable();
     CardsActionsErrors actionsErrors = new CardsActionsErrors();
     Abilities abilities = new Abilities();
+    int playerOneWins = 0;
+    int playerTwoWins = 0;
+    int totalGamesPlayed = 0;
 
     public int manaIncrement = 1;
 
@@ -36,6 +39,11 @@ public class GameGwentStone {
     public void startPlayingTheGame(Input input, ArrayNode output) {
         System.out.println("Start playing the game");
         for (GameInput game : input.getGames()) {
+            totalGamesPlayed++;
+            gameTable.clearTable();
+            playerOne.resetPlayer();
+            playerTwo.resetPlayer();
+
             processDataForEachPlayer(input, game.getStartGame());
             startNewGame(input, output, game);
         }
@@ -103,6 +111,15 @@ public class GameGwentStone {
                 case "useHeroAbility":
                     heroUseAbility(action.getAffectedRow(), output);
                     break;
+                case "getPlayerOneWins":
+                    getPlayerOneWins(output);
+                    break;
+                case "getPlayerTwoWins":
+                    getPlayerTwoWins(output);
+                    break;
+                case "getTotalGamesPlayed":
+                    getTotalGamesPlayed(output);
+                    break;
                 default:
                     break;
             }
@@ -127,12 +144,8 @@ public class GameGwentStone {
             gameTable.startNewRound(playerOne, playerTwo);
         }
 
-        if (playerTurn == 1) {
-            playerTurn = 2;
-        } else {
-            playerTurn = 1;
-        }
 
+        gameTable.unfreezeMinions(playerOne, playerTwo);
         playerOne.changePlayerTurn();
         playerTwo.changePlayerTurn();
 
@@ -428,11 +441,8 @@ public class GameGwentStone {
             return;
         }
 
-        System.out.println("attacker: " + attacker.getAttackDamage());
-        System.out.println("victim: " + victim.getHealth());
-
         if (victim.getHealth() - attacker.getAttackDamage() <= 0) {
-            // gameTable.removeCard(rowAttacked, columnAttacked);
+            gameTable.removeCard(rowAttacked, columnAttacked);
         }
         else {
             victim.setHealth(victim.getHealth() - attacker.getAttackDamage());
@@ -543,7 +553,7 @@ public class GameGwentStone {
         }
 
         if (attacker.isFrozen() == true) {
-            actionsErrors.printErrorAttackHero("Attacker is frozen.", rowAttacker, columnAttacker, output);
+            actionsErrors.printErrorAttackHero("Attacker card is frozen.", rowAttacker, columnAttacker, output);
             return;
         }
 
@@ -555,6 +565,7 @@ public class GameGwentStone {
             if (hero.getHealth() - attacker.getAttackDamage() <= 0) {
                 ObjectNode gameEnded = output.addObject();
                 gameEnded.put("gameEnded", "Player two killed the enemy hero.");
+                playerTwoWins++;
 
             } else {
                 playerOne.getHero().setHealth(hero.getHealth() - attacker.getAttackDamage());
@@ -564,6 +575,8 @@ public class GameGwentStone {
             if (hero.getHealth() - attacker.getAttackDamage() <= 0) {
                 ObjectNode gameEnded = output.addObject();
                 gameEnded.put("gameEnded", "Player one killed the enemy hero.");
+                playerOneWins++;
+
             } else {
                 playerTwo.getHero().setHealth(hero.getHealth() - attacker.getAttackDamage());
             }
@@ -573,6 +586,27 @@ public class GameGwentStone {
     }
 
     public void heroUseAbility(int row, ArrayNode output) {
+
+        if (playerOne.isActive() && playerOne.getMana() < playerOne.getHero().getMana()) {
+            actionsErrors.printErrorAbilityHero("Not enough mana to use hero's ability.", row, output);
+            return;
+        }
+
+        if (playerTwo.isActive() && playerTwo.getMana() < playerTwo.getHero().getMana()) {
+            actionsErrors.printErrorAbilityHero("Not enough mana to use hero's ability.", row, output);
+            return;
+        }
+
+
+        if (playerOne.isActive() && playerOne.getHero().hasUsedAbility == true) {
+            actionsErrors.printErrorAbilityHero("Hero has already attacked this turn.", row, output);
+            return;
+        }
+
+        if (playerTwo.isActive() && playerTwo.getHero().hasUsedAbility == true) {
+            actionsErrors.printErrorAbilityHero("Hero has already attacked this turn.", row, output);
+            return;
+        }
 
         if (playerOne.isActive()) {
             Hero hero = playerOne.getHero();
@@ -590,26 +624,22 @@ public class GameGwentStone {
             }
         }
 
-        if (playerOne.isActive() && playerOne.getHero().hasUsedAbility == true) {
-            actionsErrors.printErrorAbilityHero("Hero has already attacked this turn.", row, output);
-            return;
+        if (playerOne.isActive()) {
+            Hero hero = playerOne.getHero();
+            if ((row == 0 || row == 1) && (hero.getName().equals("General Kocioraw") || hero.getName().equals("King Mudface"))) {
+                actionsErrors.printErrorAbilityHero("Selected row does not belong to the current player.", row, output);
+                return;
+            }
         }
 
-        if (playerTwo.isActive() && playerTwo.getHero().hasUsedAbility == true) {
-            actionsErrors.printErrorAbilityHero("Hero has already attacked this turn.", row, output);
-            return;
+        if (playerTwo.isActive()) {
+            Hero hero = playerTwo.getHero();
+            if ((row == 2 || row == 3) && (hero.getName().equals("General Kocioraw") || hero.getName().equals("King Mudface"))) {
+                actionsErrors.printErrorAbilityHero("Selected row does not belong to the current player.", row, output);
+                return;
+            }
         }
 
-
-        if (playerOne.isActive() && playerOne.getMana() < playerOne.getHero().getMana()) {
-            actionsErrors.printErrorAbilityHero("Not enough mana to use hero's ability.", row, output);
-            return;
-        }
-
-        if (playerTwo.isActive() && playerTwo.getMana() < playerTwo.getHero().getMana()) {
-            actionsErrors.printErrorAbilityHero("Not enough mana to use hero's ability.", row, output);
-            return;
-        }
 
         Hero hero;
         if (playerOne.isActive()) {
@@ -636,6 +666,24 @@ public class GameGwentStone {
             abilities.bloodThirst(row, gameTable);
         }
 
+    }
+
+    public void getPlayerOneWins(ArrayNode output) {
+        ObjectNode getPlayerOneWinsOutput = output.addObject();
+        getPlayerOneWinsOutput.put("command", "getPlayerOneWins");
+        getPlayerOneWinsOutput.put("output", playerOneWins);
+    }
+
+    public void getPlayerTwoWins(ArrayNode output) {
+        ObjectNode getPlayerTwoWinsOutput = output.addObject();
+        getPlayerTwoWinsOutput.put("command", "getPlayerTwoWins");
+        getPlayerTwoWinsOutput.put("output", playerTwoWins);
+    }
+
+    public void getTotalGamesPlayed(ArrayNode output) {
+        ObjectNode getTotalGamesPlayedOutput = output.addObject();
+        getTotalGamesPlayedOutput.put("command", "getTotalGamesPlayed");
+        getTotalGamesPlayedOutput.put("output", totalGamesPlayed);
     }
 
 
