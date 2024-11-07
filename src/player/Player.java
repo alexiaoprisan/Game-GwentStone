@@ -12,10 +12,8 @@ import fileio.CardInput;
  */
 public class Player {
     private int mana;
-    private int nrCardsInHand;
-    private ArrayList<Card> cardsInHand = new ArrayList<>();
-    private int nrCardsInDeck;
-    private Deck cardsInDeck = new Deck();
+    private final ArrayList<Card> cardsInHand = new ArrayList<>();
+    private final Deck cardsInDeck = new Deck();
     private Hero hero;
     private boolean isActive; // Indicates whether the player is currently active
 
@@ -44,41 +42,6 @@ public class Player {
         this.mana = mana;
     }
 
-    /**
-     * Gets the number of cards currently in the player's hand.
-     *
-     * @return the number of cards in hand
-     */
-    public int getNrCardsInHand() {
-        return nrCardsInHand;
-    }
-
-    /**
-     * Sets the number of cards currently in the player's hand.
-     *
-     * @param nrCardsInHand the number of cards in hand to set
-     */
-    public void setNrCardsInHand(final int nrCardsInHand) {
-        this.nrCardsInHand = nrCardsInHand;
-    }
-
-    /**
-     * Gets the number of cards in the player's deck.
-     *
-     * @return the number of cards in the deck
-     */
-    public int getNrCardsInDeck() {
-        return nrCardsInDeck;
-    }
-
-    /**
-     * Sets the number of cards in the player's deck.
-     *
-     * @param nrCardsInDeck the number of cards in the deck to set
-     */
-    public void setNrCardsInDeck(final int nrCardsInDeck) {
-        this.nrCardsInDeck = nrCardsInDeck;
-    }
 
     /**
      * Gets the list of cards currently in the player's hand.
@@ -90,30 +53,12 @@ public class Player {
     }
 
     /**
-     * Sets the list of cards in the player's hand.
-     *
-     * @param cardsInHand the list of cards to set in hand
-     */
-    public void setCardsInHand(final ArrayList<Card> cardsInHand) {
-        this.cardsInHand = cardsInHand;
-    }
-
-    /**
      * Gets the deck of cards the player has.
      *
      * @return the player's deck of cards
      */
     public Deck getCardsInDeck() {
         return cardsInDeck;
-    }
-
-    /**
-     * Sets the player's deck of cards.
-     *
-     * @param cardsInDeck the deck to set
-     */
-    public void setCardsInDeck(final Deck cardsInDeck) {
-        this.cardsInDeck = cardsInDeck;
     }
 
     /**
@@ -133,7 +78,6 @@ public class Player {
     public void setActive(final boolean active) { // Renamed parameter to 'active'
         this.isActive = active;
     }
-
 
     /**
      * Gets the hero card of the player.
@@ -178,16 +122,15 @@ public class Player {
      */
     public void takeFirstCardFromDeck() {
         ArrayList<Card> decks = cardsInDeck.getDecks();
-        if (decks.size() == 0) {
+        if (decks.isEmpty()) {
             return;
         }
 
         // Put the first card from the deck into the player's hand
-        cardsInHand.add(decks.get(0));
-        nrCardsInHand++;
+        cardsInHand.add(decks.getFirst());
 
         // Remove the card from the deck
-        decks.remove(0);
+        decks.removeFirst();
     }
 
     /**
@@ -197,7 +140,6 @@ public class Player {
      */
     public void removeCardFromHand(final int idx) {
         cardsInHand.remove(idx);
-        nrCardsInHand--;
     }
 
     /**
@@ -234,8 +176,6 @@ public class Player {
      */
     public void resetPlayer() {
         cardsInHand.clear();
-        nrCardsInHand = 0;
         cardsInDeck.getDecks().clear();
-        nrCardsInDeck = 0;
     }
 }
