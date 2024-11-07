@@ -17,7 +17,6 @@ public class Player {
     private Hero hero;
     private boolean isActive; // Indicates whether the player is currently active
 
-
     /**
      * Default constructor initializing the player.
      */
