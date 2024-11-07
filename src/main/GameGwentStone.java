@@ -863,7 +863,7 @@ public class GameGwentStone {
     /**
      * Gets the total number of games played.
      *
-     * @param output the output to be populated with the total number of games played
+     * @param output the output to be populated with the total number of games
      */
     public void getTotalGamesPlayed(ArrayNode output) {
         ObjectNode getTotalGamesPlayedOutput = output.addObject();
