@@ -69,6 +69,10 @@ public final class Main {
 
         ArrayNode output = objectMapper.createArrayNode();
 
+        GameGwentStone NewGame = new GameGwentStone();
+        NewGame.startPlayingTheGame(inputData, output);
+
+
         /*
          * TODO Implement your function here
          *

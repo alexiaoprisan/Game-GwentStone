@@ -9,7 +9,6 @@ public final class DecksInput {
 
     public DecksInput() {
     }
-
     public int getNrCardsInDeck() {
         return nrCardsInDeck;
     }
