@@ -2,21 +2,18 @@ package cards;
 
 import java.util.ArrayList;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 /**
  * Represents a card with its attributes, will be extended to
  * Hero and Minion.
  */
 public class Card {
-    public int mana;
-    public int attackDamage;
-    public int health;
-    public String description;
-    public ArrayList<String> colors;
-    public String name;
-    public boolean isFrozen;
+    private int mana;
+    private int attackDamage;
+    private int health;
+    private String description;
+    private ArrayList<String> colors;
+    private String name;
+    private boolean isFrozen;
 
     /**
      * Default constructor for a Card.
@@ -34,8 +31,8 @@ public class Card {
      * @param name         the name of the card
      * @param colors       the colors associated with the card
      */
-    public Card(int mana, int health, int attackDamage, String description, String name,
-                ArrayList<String> colors) {
+    public Card(final int mana, final int health, final int attackDamage, final String description,
+                final String name, final ArrayList<String> colors) {
         this.mana = mana;
         this.health = health;
         this.attackDamage = attackDamage;
@@ -58,7 +55,7 @@ public class Card {
      *
      * @param mana the mana cost to set
      */
-    public void setMana(int mana) {
+    public void setMana(final int mana) {
         this.mana = mana;
     }
 
@@ -76,7 +73,7 @@ public class Card {
      *
      * @param attackDamage the attack damage to set
      */
-    public void setAttackDamage(int attackDamage) {
+    public void setAttackDamage(final int attackDamage) {
         this.attackDamage = attackDamage;
     }
 
@@ -94,7 +91,7 @@ public class Card {
      *
      * @param health the health to set
      */
-    public void setHealth(int health) {
+    public void setHealth(final int health) {
         this.health = health;
     }
 
@@ -112,7 +109,7 @@ public class Card {
      *
      * @param description the description to set
      */
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -130,7 +127,7 @@ public class Card {
      *
      * @param colors an ArrayList of colors to set
      */
-    public void setColors(ArrayList<String> colors) {
+    public void setColors(final ArrayList<String> colors) {
         this.colors = colors;
     }
 
@@ -148,7 +145,7 @@ public class Card {
      *
      * @param name the name to set
      */
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -157,7 +154,7 @@ public class Card {
      *
      * @param isFrozen the frozen status
      */
-    public void setIsFrozen(boolean isFrozen) {
+    public void setIsFrozen(final boolean isFrozen) {
         this.isFrozen = isFrozen;
     }
 
@@ -169,7 +166,6 @@ public class Card {
         setIsFrozen(true);
     }
 
-
     /**
      * Checks if the card is frozen.
      *
@@ -179,5 +175,5 @@ public class Card {
         return isFrozen;
     }
 
-
 }
+

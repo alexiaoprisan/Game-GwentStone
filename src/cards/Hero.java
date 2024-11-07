@@ -12,7 +12,7 @@ public class Hero extends Card {
     /**
      * Indicates whether the hero has used his special ability.
      */
-    public boolean hasUsedAbility = false;
+    private boolean hasUsedAbility = false;
 
     /**
      * Constructs a Hero with specified attributes.
@@ -24,13 +24,10 @@ public class Hero extends Card {
      * @param name         the name of the hero
      * @param colors       the colors associated with the hero
      */
-    public Hero(int mana, int health, int attackDamage, String description, String name, ArrayList<String> colors) {
-        this.mana = mana;
-        this.health = health;
-        this.attackDamage = attackDamage;
-        this.description = description;
-        this.name = name;
-        this.colors = colors;
+    public Hero(final int mana, final int health, final int attackDamage,
+                final String description, final String name,
+                final ArrayList<String> colors) {
+        super(mana, health, attackDamage, description, name, colors);
     }
 
     /**
@@ -40,19 +37,37 @@ public class Hero extends Card {
      * @param playerIdx the index of the player associated with this hero
      * @param output    the JSON array to which the hero's details are added
      */
-    public void printHeroInJson(int playerIdx, ArrayNode output) {
+    public void printHeroInJson(final int playerIdx, final ArrayNode output) {
         ObjectNode getPlayerHeroOutput = output.addObject();
         getPlayerHeroOutput.put("command", "getPlayerHero");
         getPlayerHeroOutput.put("playerIdx", playerIdx);
         ObjectNode heroNode = getPlayerHeroOutput.putObject("output");
-        heroNode.put("mana", mana);
-        heroNode.put("description", description);
+        heroNode.put("mana", getMana());
+        heroNode.put("description", getDescription());
 
         ArrayNode colorsArray = heroNode.putArray("colors");
-        for (String color : colors) {
+        for (String color : getColors()) {
             colorsArray.add(color);
         }
-        heroNode.put("name", name);
-        heroNode.put("health", health);
+        heroNode.put("name", getName());
+        heroNode.put("health", getHealth());
+    }
+
+    /**
+     * Returns whether the hero has used his special ability.
+     *
+     * @return true if the hero has used his ability, false otherwise
+     */
+    public boolean hasUsedAbility() {
+        return hasUsedAbility;
+    }
+
+    /**
+     * Sets whether the hero has used his special ability.
+     *
+     * @param hasUsedAbility true if the hero has used his ability, false otherwise
+     */
+    public void setHasUsedAbility(final boolean hasUsedAbility) {
+        this.hasUsedAbility = hasUsedAbility;
     }
 }

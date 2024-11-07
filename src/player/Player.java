@@ -11,14 +11,14 @@ import fileio.CardInput;
  * Each player has a mana, a hand of cards, a deck of cards, and a hero.
  */
 public class Player {
-    public int mana;
-    public int nrCardsInHand;
-    public ArrayList<Card> cardsInHand = new ArrayList<>();
-    int nrCardsInDeck;
-    Deck cardsInDeck = new Deck();
-    Hero hero;
+    private int mana;
+    private int nrCardsInHand;
+    private ArrayList<Card> cardsInHand = new ArrayList<>();
+    private int nrCardsInDeck;
+    private Deck cardsInDeck = new Deck();
+    private Hero hero;
+    private boolean isActive; // Indicates whether the player is currently active
 
-    boolean isActive; // Indicates whether the player is currently active
 
     /**
      * Default constructor initializing the player.
@@ -40,7 +40,7 @@ public class Player {
      *
      * @param mana the mana value to set
      */
-    public void setMana(int mana) {
+    public void setMana(final int mana) {
         this.mana = mana;
     }
 
@@ -58,7 +58,7 @@ public class Player {
      *
      * @param nrCardsInHand the number of cards in hand to set
      */
-    public void setNrCardsInHand(int nrCardsInHand) {
+    public void setNrCardsInHand(final int nrCardsInHand) {
         this.nrCardsInHand = nrCardsInHand;
     }
 
@@ -76,7 +76,7 @@ public class Player {
      *
      * @param nrCardsInDeck the number of cards in the deck to set
      */
-    public void setNrCardsInDeck(int nrCardsInDeck) {
+    public void setNrCardsInDeck(final int nrCardsInDeck) {
         this.nrCardsInDeck = nrCardsInDeck;
     }
 
@@ -94,7 +94,7 @@ public class Player {
      *
      * @param cardsInHand the list of cards to set in hand
      */
-    public void setCardsInHand(ArrayList<Card> cardsInHand) {
+    public void setCardsInHand(final ArrayList<Card> cardsInHand) {
         this.cardsInHand = cardsInHand;
     }
 
@@ -112,7 +112,7 @@ public class Player {
      *
      * @param cardsInDeck the deck to set
      */
-    public void setCardsInDeck(Deck cardsInDeck) {
+    public void setCardsInDeck(final Deck cardsInDeck) {
         this.cardsInDeck = cardsInDeck;
     }
 
@@ -121,17 +121,17 @@ public class Player {
      *
      * @return true if the player is active, false otherwise
      */
-    public boolean isActive() {
+    public boolean playerIsActive() {
         return isActive;
     }
 
     /**
      * Sets the player's active status.
      *
-     * @param isActive true if the player should be active, false otherwise
+     * @param active true if the player should be active, false otherwise
      */
-    public void setActive(boolean isActive) {
-        this.isActive = isActive;
+    public void setActive(final boolean active) { // Renamed parameter to 'active'
+        this.isActive = active;
     }
 
 
@@ -149,7 +149,7 @@ public class Player {
      *
      * @param hero the hero card to set
      */
-    public void setHero(Hero hero) {
+    public void setHero(final Hero hero) {
         this.hero = hero;
     }
 
@@ -158,7 +158,7 @@ public class Player {
      *
      * @param cardInputs the input cards to set in the deck
      */
-    public void setDeckFromInput(ArrayList<CardInput> cardInputs) {
+    public void setDeckFromInput(final ArrayList<CardInput> cardInputs) {
         for (CardInput cardInput : cardInputs) {
             Card card = new Card();
             card.setMana(cardInput.getMana());

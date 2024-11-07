@@ -1,7 +1,7 @@
-package CardsActions;
+package cardsactions;
 
 import cards.Minion;
-import gameTable.GameTable;
+import gametable.GameTable;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class Abilities {
      *
      * @param victim the minion whose attack damage is affected
      */
-    public void weakKnees(Minion victim) {
+    public void weakKnees(final Minion victim) {
         if (victim.getAttackDamage() < 2) {
             victim.setAttackDamage(0);
         } else {
@@ -32,7 +32,7 @@ public class Abilities {
      *
      * @param helpedMinion the minion receiving the health boost
      */
-    public void godsPlan(Minion helpedMinion) {
+    public void godsPlan(final Minion helpedMinion) {
         int newHealth = helpedMinion.getHealth() + 2;
         helpedMinion.setHealth(newHealth);
     }
@@ -44,7 +44,7 @@ public class Abilities {
      * @param attacker the minion initiating the ability
      * @param victim   the minion whose health is swapped with the attacker
      */
-    public void skyJack(Minion attacker, Minion victim) {
+    public void skyJack(final Minion attacker, final Minion victim) {
         int health = victim.getHealth();
         victim.setHealth(attacker.getHealth());
         attacker.setHealth(health);
@@ -60,7 +60,8 @@ public class Abilities {
      * @param row       the row where the minion is located
      * @param col       the column where the minion is located
      */
-    public void shapeshift(Minion victim, GameTable gameTable, int row, int col) {
+    public void shapeshift(final Minion victim, final GameTable gameTable,
+                           final int row, final int col) {
         int aux = victim.getAttackDamage();
         victim.setAttackDamage(victim.getHealth());
         victim.setHealth(aux);
@@ -77,7 +78,7 @@ public class Abilities {
      * @param row       the row to be frozen
      * @param gameTable the game table where the row is located
      */
-    public void subZero(int row, GameTable gameTable) {
+    public void subZero(final int row, final GameTable gameTable) {
         gameTable.freezeRow(row);
     }
 
@@ -89,7 +90,7 @@ public class Abilities {
      * @param row       the row to search for the healthiest minion
      * @param gameTable the game table where the row is located
      */
-    public void lowBlow(int row, GameTable gameTable) {
+    public void lowBlow(final int row, final GameTable gameTable) {
         List<Minion> rowMinions = gameTable.getRowFromTable(row);
         int maxHealth = -1;
         int posHealthiestMinion = 0;
@@ -111,7 +112,7 @@ public class Abilities {
      * @param row       the row whose minions' health will be increased
      * @param gameTable the game table where the row is located
      */
-    public void earthBorn(int row, GameTable gameTable) {
+    public void earthBorn(final int row, final GameTable gameTable) {
         List<Minion> rowMinions = gameTable.getRowFromTable(row);
         for (Minion minion : rowMinions) {
             minion.setHealth(minion.getHealth() + 1);
@@ -125,7 +126,7 @@ public class Abilities {
      * @param row       the row whose minions' attack damage will be increased
      * @param gameTable the game table where the row is located
      */
-    public void bloodThirst(int row, GameTable gameTable) {
+    public void bloodThirst(final int row, final GameTable gameTable) {
         List<Minion> rowMinions = gameTable.getRowFromTable(row);
         for (Minion minion : rowMinions) {
             minion.setAttackDamage(minion.getAttackDamage() + 1);

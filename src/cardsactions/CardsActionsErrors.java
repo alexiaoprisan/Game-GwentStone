@@ -1,4 +1,4 @@
-package CardsActions;
+package cardsactions;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -19,7 +19,9 @@ public class CardsActionsErrors {
      * @param attackedCol the column of the attacked card
      * @param output      the JSON array where the error is logged
      */
-    public void printErrorAttack(String error, int attackerRow, int attackerCol, int attackedRow, int attackedCol, ArrayNode output) {
+    public void printErrorAttack(final String error, final int attackerRow,
+                                 final int attackerCol, final int attackedRow,
+                                 final int attackedCol, final ArrayNode output) {
         ObjectNode errorRow = output.addObject();
         errorRow.put("command", "cardUsesAttack");
         ObjectNode cardAttacker = errorRow.putObject("cardAttacker");
@@ -41,7 +43,9 @@ public class CardsActionsErrors {
      * @param attackedCol the column of the attacked card
      * @param output      the JSON array where the error is logged
      */
-    public void printErrorAbility(String error, int attackerRow, int attackerCol, int attackedRow, int attackedCol, ArrayNode output) {
+    public void printErrorAbility(final String error, final int attackerRow,
+                                  final int attackerCol, final int attackedRow,
+                                  final int attackedCol, final ArrayNode output) {
         ObjectNode errorRow = output.addObject();
         errorRow.put("command", "cardUsesAbility");
         ObjectNode cardAttacker = errorRow.putObject("cardAttacker");
@@ -61,7 +65,8 @@ public class CardsActionsErrors {
      * @param attackerCol the column of the attacking card
      * @param output      the JSON array where the error is logged
      */
-    public void printErrorAttackHero(String error, int attackerRow, int attackerCol, ArrayNode output) {
+    public void printErrorAttackHero(final String error, final int attackerRow,
+                                     final int attackerCol, final ArrayNode output) {
         ObjectNode errorRow = output.addObject();
         errorRow.put("command", "useAttackHero");
         ObjectNode cardAttacker = errorRow.putObject("cardAttacker");
@@ -77,7 +82,8 @@ public class CardsActionsErrors {
      * @param attackerRow the row affected by the ability
      * @param output      the JSON array where the error is logged
      */
-    public void printErrorAbilityHero(String error, int attackerRow, ArrayNode output) {
+    public void printErrorAbilityHero(final String error, final int attackerRow,
+                                      final ArrayNode output) {
         ObjectNode errorRow = output.addObject();
         errorRow.put("affectedRow", attackerRow);
         errorRow.put("command", "useHeroAbility");

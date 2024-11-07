@@ -70,8 +70,8 @@ public final class Main {
 
         ArrayNode output = objectMapper.createArrayNode();
 
-        GameGwentStone NewGame = new GameGwentStone();
-        NewGame.startPlayingTheGame(inputData, output);
+        GameGwentStone newGame = new GameGwentStone();
+        newGame.startPlayingTheGame(inputData, output);
 
 
         /*

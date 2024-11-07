@@ -1,4 +1,4 @@
-package gameTable;
+package gametable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +15,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class GameTable {
     private static final int MAX_ROW = 4; // Maximum number of rows on the table
     private static final int MAX_COL = 5; // Maximum number of columns on the table
+    private final int three = 3;
 
-    public List<List<Minion>> table; // A 2D list representing the table with minions
+    private List<List<Minion>> table; // A 2D list representing the table with minions
 
     /**
      * Constructs a new game table with a fixed number of rows and columns.
@@ -33,12 +34,12 @@ public class GameTable {
     /**
      * Gets the minion at the specified position on the table.
      *
-     * @param coordX  the row index
-     * @param coordY  the column index
-     * @param output  the JSON output array to store any errors
+     * @param coordX the row index
+     * @param coordY the column index
+     * @param output the JSON output array to store any errors
      * @return the Minion at the specified position
      */
-    public Minion getCardFromTable(int coordX, int coordY, ArrayNode output) {
+    public Minion getCardFromTable(final int coordX, final int coordY, final ArrayNode output) {
         // Check if coordX is within the valid range
         if (coordX < 0 || coordX >= MAX_ROW) {
             ObjectNode errorRow = output.addObject();
@@ -73,7 +74,7 @@ public class GameTable {
      * @param rowIndex the index of the row
      * @return a list of Minions in the specified row
      */
-    public List<Minion> getRowFromTable(int rowIndex) {
+    public List<Minion> getRowFromTable(final int rowIndex) {
         List<Minion> row = table.get(rowIndex); // Retrieve the row at the specified index
         return new ArrayList<>(row); // Return a copy of the row
     }
@@ -86,7 +87,7 @@ public class GameTable {
      * @param output   the JSON output array to store any errors
      * @return true if the card is successfully added, false otherwise
      */
-    public boolean addCard(int rowIndex, final Minion minion, ArrayNode output) {
+    public boolean addCard(final int rowIndex, final Minion minion, final ArrayNode output) {
         if (rowIndex < 0 || rowIndex >= MAX_ROW) {
             return false; // Invalid row index
         }
@@ -113,7 +114,7 @@ public class GameTable {
      * @param coordY the column index
      * @return true if the card is successfully removed, false otherwise
      */
-    public boolean removeCard(int coordX, int coordY) {
+    public boolean removeCard(final int coordX, final int coordY) {
         if (coordX < 0 || coordX >= MAX_ROW) {
             return false;
         }
@@ -137,16 +138,16 @@ public class GameTable {
      * @param playerOne the first player
      * @param playerTwo the second player
      */
-    public void startNewRound(Player playerOne, Player playerTwo) {
+    public void startNewRound(final Player playerOne, final Player playerTwo) {
         for (int i = 0; i < MAX_ROW; ++i) {
             List<Minion> row = table.get(i);
             for (Minion minion : row) {
-                minion.hasAttackedThisTurn = false;
-                minion.usedAbilityThisTurn = false;
+                minion.setHasAttackedThisTurn(false);
+                minion.setUsedAbilityThisTurn(false);
             }
         }
-        playerOne.getHero().hasUsedAbility = false;
-        playerTwo.getHero().hasUsedAbility = false;
+        playerOne.getHero().setHasUsedAbility(false);
+        playerTwo.getHero().setHasUsedAbility(false);
     }
 
     /**
@@ -155,14 +156,14 @@ public class GameTable {
      * @param playerOne the first player
      * @param playerTwo the second player
      */
-    public void unfreezeMinions(Player playerOne, Player playerTwo) {
+    public void unfreezeMinions(final Player playerOne, final Player playerTwo) {
         for (int i = 0; i < MAX_ROW; ++i) {
             List<Minion> row = table.get(i);
             for (Minion minion : row) {
                 // Unfreeze minions depending on the row and which player is active
-                if ((i == 0 || i == 1) && playerTwo.isActive()) {
+                if ((i == 0 || i == 1) && playerTwo.playerIsActive()) {
                     minion.setIsFrozen(false);
-                } else if ((i == 2 || i == 3) && playerOne.isActive()) {
+                } else if ((i == 2 || i == three) && playerOne.playerIsActive()) {
                     minion.setIsFrozen(false);
                 }
             }
@@ -174,7 +175,7 @@ public class GameTable {
      *
      * @param output the JSON array to store the table output
      */
-    public void getTableOutput(ArrayNode output) {
+    public void getTableOutput(final ArrayNode output) {
         for (int i = 0; i < MAX_ROW; ++i) {
             List<Minion> row = table.get(i);
             ArrayNode rowArray = output.addArray();
@@ -202,12 +203,12 @@ public class GameTable {
      *
      * @param output the JSON array to store the frozen cards
      */
-    public void getFrozenCardsTable(ArrayNode output) {
+    public void getFrozenCardsTable(final ArrayNode output) {
         for (int i = 0; i < MAX_ROW; ++i) {
             List<Minion> row = table.get(i);
 
             for (Minion minion : row) {
-                if (minion.isFrozen) {
+                if (minion.isFrozen()) {
                     ObjectNode card = output.addObject();
                     card.put("attackDamage", minion.getAttackDamage());
                     card.put("health", minion.getHealth());
@@ -230,7 +231,7 @@ public class GameTable {
      * @param rowIndex the row index
      * @return true if a tank is present, false otherwise
      */
-    public boolean existsTankOnRow(int rowIndex) {
+    public boolean existsTankOnRow(final int rowIndex) {
         List<Minion> row = table.get(rowIndex);
         for (Minion minion : row) {
             if (minion.isTank()) {
@@ -245,7 +246,7 @@ public class GameTable {
      *
      * @param rowIndex the row index
      */
-    public void freezeRow(int rowIndex) {
+    public void freezeRow(final int rowIndex) {
         if (rowIndex < 0 || rowIndex >= MAX_ROW) {
             return;
         }
@@ -256,7 +257,6 @@ public class GameTable {
         }
 
         for (Minion minion : row) {
-            minion.isFrozen = true;
             minion.setIsFrozen(true);
             minion.freeze();
         }

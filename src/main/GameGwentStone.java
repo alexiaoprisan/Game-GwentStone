@@ -4,7 +4,13 @@ import player.Player;
 import player.Deck;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import fileio.*;
+import fileio.Input;
+import fileio.GameInput;
+import fileio.StartGameInput;
+import fileio.ActionsInput;
+import fileio.Coordinates;
+import fileio.CardInput;
+import fileio.DecksInput;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,9 +19,9 @@ import java.util.Random;
 import cards.Card;
 import cards.Hero;
 import cards.Minion;
-import gameTable.GameTable;
-import CardsActions.CardsActionsErrors;
-import CardsActions.Abilities;
+import gametable.GameTable;
+import cardsactions.CardsActionsErrors;
+import cardsactions.Abilities;
 
 /**
  * This class contains the logic of the game GwentStone Lite.
@@ -24,16 +30,20 @@ import CardsActions.Abilities;
  */
 public class GameGwentStone {
 
-    Player playerOne = new Player();
-    Player playerTwo = new Player();
-    GameTable gameTable = new GameTable();
-    CardsActionsErrors actionsErrors = new CardsActionsErrors();
-    Abilities abilities = new Abilities();
-    int playerOneWins = 0;
-    int playerTwoWins = 0;
-    int totalGamesPlayed = 0;
+    private Player playerOne = new Player();
+    private Player playerTwo = new Player();
+    private GameTable gameTable = new GameTable();
+    private CardsActionsErrors actionsErrors = new CardsActionsErrors();
+    private Abilities abilities = new Abilities();
+    private int playerOneWins = 0;
+    private int playerTwoWins = 0;
+    private int totalGamesPlayed = 0;
 
-    public int manaIncrement = 1;
+    private final int three = 3;
+    private final int maxMana = 10;
+    private final int initialHeroHealth = 30;
+
+    private int manaIncrement = 1;
 
     /**
      * Constructs a new GameGwentStone object.
@@ -43,12 +53,13 @@ public class GameGwentStone {
 
     /**
      * Starts playing the game by processing the input data and performing the actions.
-     * This method manages each game, reseting the players and the game table when a new game starts.
+     * This method manages each game, reseting the players and the
+     * game table when a new game starts.
      *
      * @param input  the input data containing all the data needed to play the game
      * @param output the output to be populated with the game results
      */
-    public void startPlayingTheGame(Input input, ArrayNode output) {
+    public void startPlayingTheGame(final Input input, final ArrayNode output) {
         for (GameInput game : input.getGames()) {
             totalGamesPlayed++;
             gameTable.clearTable();
@@ -68,7 +79,7 @@ public class GameGwentStone {
      * @param output the output to be populated with the game results
      * @param game   the game input containing the actions to be performed
      */
-    public void startNewGame(Input input, ArrayNode output, GameInput game) {
+    public void startNewGame(final Input input, final ArrayNode output, final GameInput game) {
         int completedPlayerTurns = 0;
         int playerTurn = game.getStartGame().getStartingPlayer();
         manaIncrement = 1;
@@ -153,14 +164,14 @@ public class GameGwentStone {
      *
      * @param completedPlayerTurns
      */
-    private void endRoundChanges(int completedPlayerTurns) {
+    private void endRoundChanges(final int completedPlayerTurns) {
 
         // If both players have completed their turns, the round ends.
         // It happens every two turns, so it verifies the number of completed turns.
         if (completedPlayerTurns % 2 == 0) {
 
             // Increase the mana which will be added to the players' mana
-            if (manaIncrement < 10) {
+            if (manaIncrement < maxMana) {
                 manaIncrement++;
             }
 
@@ -186,12 +197,13 @@ public class GameGwentStone {
     }
 
     /**
-     * Gets the data from the input and processes it for each player, saving the chosen deck and hero.
+     * Gets the data from the input and processes it for each player,
+     * saving the chosen deck and hero.
      *
      * @param input     the input data containing all the data needed to play the game
      * @param startGame the start game input containing the chosen decks and heroes
      */
-    private void processDataForEachPlayer(Input input, final StartGameInput startGame) {
+    private void processDataForEachPlayer(final Input input, final StartGameInput startGame) {
 
         // For the first player
         // Get the decks for the first player based on the index
@@ -214,7 +226,8 @@ public class GameGwentStone {
 
         // Get the hero card for the player
         CardInput heroPlayerOne = startGame.getPlayerOneHero();
-        Hero heroCardPlayerOne = new Hero(heroPlayerOne.getMana(), 30, heroPlayerOne.getAttackDamage(),
+        Hero heroCardPlayerOne = new Hero(heroPlayerOne.getMana(),
+                initialHeroHealth, heroPlayerOne.getAttackDamage(),
                 heroPlayerOne.getDescription(), heroPlayerOne.getName(), heroPlayerOne.getColors());
         playerOne.setHero(heroCardPlayerOne);
         playerOne.setMana(1);
@@ -240,7 +253,8 @@ public class GameGwentStone {
 
         // Get the hero card for the player
         CardInput heroPlayerTwo = startGame.getPlayerTwoHero();
-        Hero heroCardPlayerTwo = new Hero(heroPlayerTwo.getMana(), 30, heroPlayerTwo.getAttackDamage(),
+        Hero heroCardPlayerTwo = new Hero(heroPlayerTwo.getMana(), initialHeroHealth,
+                heroPlayerTwo.getAttackDamage(),
                 heroPlayerTwo.getDescription(), heroPlayerTwo.getName(), heroPlayerTwo.getColors());
         playerTwo.setHero(heroCardPlayerTwo);
         playerTwo.setMana(1);
@@ -253,7 +267,7 @@ public class GameGwentStone {
      * @param playerIdx the index of the player
      * @param output    the output to be populated with the player's deck
      */
-    private void methodGetPlayerDeck(final int playerIdx, ArrayNode output) {
+    private void methodGetPlayerDeck(final int playerIdx, final ArrayNode output) {
 
         Deck deck = new Deck();
 
@@ -292,7 +306,7 @@ public class GameGwentStone {
      * @param playerIdx the index of the player
      * @param output    the output to be populated with the player's hero
      */
-    private void methodGetPlayerHero(final int playerIdx, ArrayNode output) {
+    private void methodGetPlayerHero(final int playerIdx, final ArrayNode output) {
 
         // Get the player's hero based on the index
         Hero hero;
@@ -310,9 +324,9 @@ public class GameGwentStone {
      *
      * @param output the output to be populated with the player's turn
      */
-    private void methodGetPlayerTurn(ArrayNode output) {
+    private void methodGetPlayerTurn(final ArrayNode output) {
         int isPlayerTurn;
-        if (playerOne.isActive()) {
+        if (playerOne.playerIsActive()) {
             isPlayerTurn = 1;
         } else {
             isPlayerTurn = 2;
@@ -328,7 +342,7 @@ public class GameGwentStone {
      * @param playerIdx the index of the player
      * @param output    the output to be populated with the player's mana
      */
-    private void methodGetPlayerMana(final int playerIdx, ArrayNode output) {
+    private void methodGetPlayerMana(final int playerIdx, final ArrayNode output) {
         int mana;
         if (playerIdx == 1) {
             mana = playerOne.getMana();
@@ -348,7 +362,7 @@ public class GameGwentStone {
      * @param playerIdx the index of the player
      * @param output    the output to be populated with the cards in the player's hand
      */
-    private void methodGetCardsInHand(final int playerIdx, ArrayNode output) {
+    private void methodGetCardsInHand(final int playerIdx, final ArrayNode output) {
         ArrayList<Card> cardsInHand;
         if (playerIdx == 1) {
             cardsInHand = playerOne.getCardsInHand();
@@ -379,15 +393,16 @@ public class GameGwentStone {
 
     /**
      * Used when the current player wants to place a card on the table.
-     * It verifies if the player has enough mana to place the card and if the card can be placed on the table.
+     * It verifies if the player has enough mana to place the card
+     * and if the card can be placed on the table.
      *
      * @param handIdx the index of the card in the player's hand
      * @param output  the output to be populated with the result of the action
      */
-    private void placeCard(final int handIdx, ArrayNode output) {
+    private void placeCard(final int handIdx, final ArrayNode output) {
         Player currentPlayer;
         int rowIdx;
-        if (playerOne.isActive() == true) {
+        if (playerOne.playerIsActive()) {
             currentPlayer = playerOne;
         } else {
             currentPlayer = playerTwo;
@@ -402,15 +417,17 @@ public class GameGwentStone {
         Card card = currentPlayer.getCardsInHand().get(handIdx);
 
         // Put the card information in a Minion object, which will be placed on the table
-        Minion minion = new Minion(card.getMana(), card.getHealth(), card.getAttackDamage(), card.getDescription(), card.getName(), false, card.getColors());
+        Minion minion = new Minion(card.getMana(), card.getHealth(),
+                card.getAttackDamage(), card.getDescription(), card.getName(),
+                false, card.getColors());
 
         // Find the row where the card will be placed, based on minion's type
-        if (minion.isFrontRow() && playerOne.isActive() == true) {
+        if (minion.isFrontRow() && playerOne.playerIsActive()) {
             rowIdx = 2;
-        } else if (minion.isFrontRow() && playerOne.isActive() == false) {
+        } else if (minion.isFrontRow() && !playerOne.playerIsActive()) {
             rowIdx = 1;
-        } else if (!minion.isFrontRow() && playerOne.isActive() == true) {
-            rowIdx = 3;
+        } else if (!minion.isFrontRow() && playerOne.playerIsActive()) {
+            rowIdx = three;
         } else {
             rowIdx = 0;
         }
@@ -422,8 +439,9 @@ public class GameGwentStone {
             errorNotEnoughMana.put("handIdx", handIdx);
             errorNotEnoughMana.put("error", "Not enough mana to place card on table.");
             return;
-        } else if (gameTable.addCard(rowIdx, minion, output) == true) {
-            // If the card was placed on the table, decrease the player's mana and remove the card from the hand
+        } else if (gameTable.addCard(rowIdx, minion, output)) {
+            // If the card was placed on the table, decrease
+            // the player's mana and remove the card from the hand
             currentPlayer.decreaseMana(card.getMana());
             currentPlayer.removeCardFromHand(handIdx);
         }
@@ -436,7 +454,7 @@ public class GameGwentStone {
      *
      * @param output the output to be populated with the cards on the table
      */
-    private void getCardsOnTable(ArrayNode output) {
+    private void getCardsOnTable(final ArrayNode output) {
         ObjectNode getCardsOnTableOutput = output.addObject();
         getCardsOnTableOutput.put("command", "getCardsOnTable");
 
@@ -452,7 +470,7 @@ public class GameGwentStone {
      *
      * @param output the output to be populated with the frozen cards on the table
      */
-    private void getFrozenCardsOnTable(ArrayNode output) {
+    private void getFrozenCardsOnTable(final ArrayNode output) {
         ObjectNode getFrozenCardsOnTableOutput = output.addObject();
         getFrozenCardsOnTableOutput.put("command", "getFrozenCardsOnTable");
 
@@ -470,7 +488,7 @@ public class GameGwentStone {
      * @param rowY   the column index of the card
      * @param output the output to be populated with the card at the specified position
      */
-    private void getCardAtPosition(int rowX, int rowY, ArrayNode output) {
+    private void getCardAtPosition(final int rowX, final int rowY, final ArrayNode output) {
 
         Minion minion = gameTable.getCardFromTable(rowX, rowY, output);
         if (minion != null) {
@@ -505,7 +523,9 @@ public class GameGwentStone {
      * @param cardAttacked the coordinates of the attacked card
      * @param output       the output to be populated with the result of the action
      */
-    private void cardUsesAttack(Coordinates cardAttacker, Coordinates cardAttacked, ArrayNode output) {
+    private void cardUsesAttack(final Coordinates cardAttacker,
+                                final Coordinates cardAttacked,
+                                final ArrayNode output) {
 
         // Get the coordinates of the attacking and attacked cards
         int rowAttacker = cardAttacker.getX();
@@ -518,41 +538,50 @@ public class GameGwentStone {
         Minion victim = gameTable.getCardFromTable(rowAttacked, columnAttacked, output);
 
         // Check if the attacker attacked the correct row
-        if (playerOne.isActive() && (rowAttacked == 2 || rowAttacked == 3)) {
-            actionsErrors.printErrorAttack("Attacked card does not belong to the enemy.", rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
+        if (playerOne.playerIsActive() && (rowAttacked == 2 || rowAttacked == three)) {
+            actionsErrors.printErrorAttack("Attacked card does not belong to the enemy.",
+                    rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
             return;
         }
 
-        if (playerTwo.isActive() && (rowAttacked == 0 || rowAttacked == 1)) {
-            actionsErrors.printErrorAttack("Attacked card does not belong to the enemy.", rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
+        if (playerTwo.playerIsActive() && (rowAttacked == 0 || rowAttacked == 1)) {
+            actionsErrors.printErrorAttack("Attacked card does not belong to the enemy.",
+                    rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
             return;
         }
 
         // Check if the attacker needed to attack a tank
-        if (playerOne.isActive() && (gameTable.existsTankOnRow(0) == true || gameTable.existsTankOnRow(1) == true) && (victim.isTank() == false)) {
-            actionsErrors.printErrorAttack("Attacked card is not of type 'Tank'.", rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
+        if (playerOne.playerIsActive() && (gameTable.existsTankOnRow(0)
+                || gameTable.existsTankOnRow(1)) && !(victim.isTank())) {
+            actionsErrors.printErrorAttack("Attacked card is not of type 'Tank'.",
+                    rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
             return;
         }
 
-        if (playerTwo.isActive() && (gameTable.existsTankOnRow(2) == true || gameTable.existsTankOnRow(3) == true) && (victim.isTank() == false)) {
-            actionsErrors.printErrorAttack("Attacked card is not of type 'Tank'.", rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
+        if (playerTwo.playerIsActive() && (gameTable.existsTankOnRow(2)
+                || gameTable.existsTankOnRow(three)) && (!victim.isTank())) {
+            actionsErrors.printErrorAttack("Attacked card is not of type 'Tank'.",
+                    rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
             return;
         }
 
         // Check if the attacker has already attacked this turn
-        if (attacker.hasAttackedThisTurn() == true) {
-            actionsErrors.printErrorAttack("Attacker card has already attacked this turn.", rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
+        if (attacker.hasAttackedThisTurn()) {
+            actionsErrors.printErrorAttack("Attacker card has already attacked this turn.",
+                    rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
             return;
         }
 
-        if (attacker.usedAbilityThisTurn() == true) {
-            actionsErrors.printErrorAttack("Attacker card has already attacked this turn.", rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
+        if (attacker.usedAbilityThisTurn()) {
+            actionsErrors.printErrorAttack("Attacker card has already attacked this turn.",
+                    rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
             return;
         }
 
         // Check if the attacker is frozen
-        if (attacker.isFrozen() == true) {
-            actionsErrors.printErrorAttack("Attacker is frozen.", rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
+        if (attacker.isFrozen()) {
+            actionsErrors.printErrorAttack("Attacker is frozen.", rowAttacker,
+                    columnAttacker, rowAttacked, columnAttacked, output);
             return;
         }
 
@@ -566,7 +595,7 @@ public class GameGwentStone {
         }
 
         // Set the attacker to have attacked this turn, so it cannot attack again
-        attacker.hasAttackedThisTurn = true;
+        attacker.setHasAttackedThisTurn(true);
 
     }
 
@@ -578,7 +607,9 @@ public class GameGwentStone {
      * @param cardAttacked the coordinates of the attacked card
      * @param output       the output to be populated with the result of the action
      */
-    public void useCardAbility(Coordinates cardAttacker, Coordinates cardAttacked, ArrayNode output) {
+    public void useCardAbility(final Coordinates cardAttacker,
+                               final Coordinates cardAttacked,
+                               final ArrayNode output) {
         // Get the coordinates of the attacking and attacked cards
         int rowAttacker = cardAttacker.getX();
         int columnAttacker = cardAttacker.getY();
@@ -595,52 +626,69 @@ public class GameGwentStone {
         }
 
         // Check if the attacker attacked the correct row, his own row
-        if (playerOne.isActive() && (rowAttacked == 0 || rowAttacked == 1) && attacker.getName().equals("Disciple")) {
-            actionsErrors.printErrorAttack("Attacked card does not belong to the current player.", rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
+        if (playerOne.playerIsActive() && (rowAttacked == 0 || rowAttacked == 1)
+                && attacker.getName().equals("Disciple")) {
+            actionsErrors.printErrorAttack("Attacked card does not belong to the current player.",
+                    rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
             return;
         }
 
         // Check if the attacker card attacked the correct row, the enemy's row
-        if ((playerTwo.isActive() && (rowAttacked == 2 || rowAttacked == 3)) && attacker.getName().equals("Disciple")) {
-            actionsErrors.printErrorAbility("Attacked card does not belong to the current player.", rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
+        if ((playerTwo.playerIsActive() && (rowAttacked == 2 || rowAttacked == three))
+                && attacker.getName().equals("Disciple")) {
+            actionsErrors.printErrorAbility("Attacked card does not belong to the current player.",
+                    rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
             return;
         }
 
-        if (playerOne.isActive() && (rowAttacked == 2 || rowAttacked == 3) && !attacker.getName().equals("Disciple")) {
-            actionsErrors.printErrorAttack("Attacked card does not belong to the enemy.", rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
+        if (playerOne.playerIsActive() && (rowAttacked == 2 || rowAttacked == three)
+                && !attacker.getName().equals("Disciple")) {
+            actionsErrors.printErrorAttack("Attacked card does not belong to the enemy.",
+                    rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
             return;
         }
 
-        if ((playerTwo.isActive() && (rowAttacked == 0 || rowAttacked == 1)) && !attacker.getName().equals("Disciple")) {
-            actionsErrors.printErrorAbility("Attacked card does not belong to the enemy.", rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
+        if ((playerTwo.playerIsActive() && (rowAttacked == 0 || rowAttacked == 1))
+                && !attacker.getName().equals("Disciple")) {
+            actionsErrors.printErrorAbility("Attacked card does not belong to the enemy.",
+                    rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
             return;
         }
 
         // Check if the attacker needed to attack a tank
-        if (playerOne.isActive() && (gameTable.existsTankOnRow(0) == true || gameTable.existsTankOnRow(1) == true) && (victim.isTank() == false) && !attacker.getName().equals("Disciple")) {
-            actionsErrors.printErrorAbility("Attacked card is not of type 'Tank'.", rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
+        if (playerOne.playerIsActive() && (gameTable.existsTankOnRow(0)
+                || gameTable.existsTankOnRow(1)) && !(victim.isTank())
+                && !attacker.getName().equals("Disciple")) {
+            actionsErrors.printErrorAbility("Attacked card is not of type 'Tank'.",
+                    rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
             return;
         }
 
-        if (playerTwo.isActive() && (gameTable.existsTankOnRow(2) == true || gameTable.existsTankOnRow(3) == true) && (victim.isTank() == false) && !attacker.getName().equals("Disciple")) {
-            actionsErrors.printErrorAbility("Attacked card is not of type 'Tank'.", rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
+        if (playerTwo.playerIsActive() && (gameTable.existsTankOnRow(2)
+                || gameTable.existsTankOnRow(three)) && !(victim.isTank())
+                && !attacker.getName().equals("Disciple")) {
+            actionsErrors.printErrorAbility("Attacked card is not of type 'Tank'.",
+                    rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
             return;
         }
 
         // Check if the attacker has already attacked this turn
-        if (attacker.hasAttackedThisTurn() == true) {
-            actionsErrors.printErrorAbility("Attacker card has already attacked this turn.", rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
+        if (attacker.hasAttackedThisTurn()) {
+            actionsErrors.printErrorAbility("Attacker card has already attacked this turn.",
+                    rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
             return;
         }
 
-        if (attacker.usedAbilityThisTurn() == true) {
-            actionsErrors.printErrorAbility("Attacker card has already attacked this turn.", rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
+        if (attacker.usedAbilityThisTurn()) {
+            actionsErrors.printErrorAbility("Attacker card has already attacked this turn.",
+                    rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
             return;
         }
 
         // Check if the attacker is frozen
-        if (attacker.isFrozen() == true) {
-            actionsErrors.printErrorAbility("Attacker is frozen.", rowAttacker, columnAttacker, rowAttacked, columnAttacked, output);
+        if (attacker.isFrozen()) {
+            actionsErrors.printErrorAbility("Attacker is frozen.", rowAttacker,
+                    columnAttacker, rowAttacked, columnAttacked, output);
             return;
         }
 
@@ -655,7 +703,7 @@ public class GameGwentStone {
         }
 
         // Set the attacker to have attacked this turn, so it cannot attack again
-        attacker.usedAbilityThisTurn = true;
+        attacker.setUsedAbilityThisTurn(true);
     }
 
     /**
@@ -665,7 +713,7 @@ public class GameGwentStone {
      * @param cardAttacker the coordinates of the attacking card
      * @param output       the output to be populated with the result of the action
      */
-    public void heroIsAttacked(Coordinates cardAttacker, ArrayNode output) {
+    public void heroIsAttacked(final Coordinates cardAttacker, final ArrayNode output) {
         // Get the coordinates of the attacking card
         int rowAttacker = cardAttacker.getX();
         int columnAttacker = cardAttacker.getY();
@@ -677,33 +725,39 @@ public class GameGwentStone {
         }
 
         // Check if the attacker needed to attack a tank first
-        if (playerOne.isActive() && (gameTable.existsTankOnRow(0) == true || gameTable.existsTankOnRow(1) == true)) {
-            actionsErrors.printErrorAttackHero("Attacked card is not of type 'Tank'.", rowAttacker, columnAttacker, output);
+        if (playerOne.playerIsActive() && (gameTable.existsTankOnRow(0)
+                || gameTable.existsTankOnRow(1))) {
+            actionsErrors.printErrorAttackHero("Attacked card is not of type 'Tank'.",
+                    rowAttacker, columnAttacker, output);
             return;
         }
 
-        if (playerTwo.isActive() && (gameTable.existsTankOnRow(2) == true || gameTable.existsTankOnRow(3) == true)) {
-            actionsErrors.printErrorAttackHero("Attacked card is not of type 'Tank'.", rowAttacker, columnAttacker, output);
+        if (playerTwo.playerIsActive() && (gameTable.existsTankOnRow(2)
+                || gameTable.existsTankOnRow(three))) {
+            actionsErrors.printErrorAttackHero("Attacked card is not of type 'Tank'.",
+                    rowAttacker, columnAttacker, output);
             return;
         }
 
         // Check if the attacker has already attacked this turn
-        if (attacker.hasAttackedThisTurn == true) {
-            actionsErrors.printErrorAttackHero("Attacker card has already attacked this turn.", rowAttacker, columnAttacker, output);
+        if (attacker.hasAttackedThisTurn()) {
+            actionsErrors.printErrorAttackHero("Attacker card has already attacked this turn.",
+                    rowAttacker, columnAttacker, output);
             return;
         }
 
         // Check if the attacker is frozen
-        if (attacker.isFrozen() == true) {
-            actionsErrors.printErrorAttackHero("Attacker card is frozen.", rowAttacker, columnAttacker, output);
+        if (attacker.isFrozen()) {
+            actionsErrors.printErrorAttackHero("Attacker card is frozen.", rowAttacker,
+                    columnAttacker, output);
             return;
         }
 
         // Set the attacker to have attacked this turn, so it cannot attack again
-        attacker.hasAttackedThisTurn = true;
+        attacker.setHasAttackedThisTurn(true);
 
         Hero hero;
-        if (playerTwo.isActive()) {
+        if (playerTwo.playerIsActive()) {
             hero = playerOne.getHero();
             // Check if the hero will die after the attack
             if (hero.getHealth() - attacker.getAttackDamage() <= 0) {
@@ -743,74 +797,88 @@ public class GameGwentStone {
      * @param row    the row where the hero will use the ability
      * @param output the output to be populated with the result of the action
      */
-    public void heroUseAbility(int row, ArrayNode output) {
+    public void heroUseAbility(final int row, final ArrayNode output) {
 
         // Check if the player has enough mana to use the hero's ability
-        if (playerOne.isActive() && playerOne.getMana() < playerOne.getHero().getMana()) {
-            actionsErrors.printErrorAbilityHero("Not enough mana to use hero's ability.", row, output);
+        if (playerOne.playerIsActive() && playerOne.getMana() < playerOne.getHero().getMana()) {
+            actionsErrors.printErrorAbilityHero("Not enough mana to use hero's ability.",
+                    row, output);
             return;
         }
 
-        if (playerTwo.isActive() && playerTwo.getMana() < playerTwo.getHero().getMana()) {
-            actionsErrors.printErrorAbilityHero("Not enough mana to use hero's ability.", row, output);
+        if (playerTwo.playerIsActive() && playerTwo.getMana() < playerTwo.getHero().getMana()) {
+            actionsErrors.printErrorAbilityHero("Not enough mana to use hero's ability.",
+                    row, output);
             return;
         }
 
 
         // Check if the hero has already used the ability this turn
-        if (playerOne.isActive() && playerOne.getHero().hasUsedAbility == true) {
-            actionsErrors.printErrorAbilityHero("Hero has already attacked this turn.", row, output);
+        if (playerOne.playerIsActive() && playerOne.getHero().hasUsedAbility()) {
+            actionsErrors.printErrorAbilityHero("Hero has already attacked this turn.",
+                    row, output);
             return;
         }
 
-        if (playerTwo.isActive() && playerTwo.getHero().hasUsedAbility == true) {
-            actionsErrors.printErrorAbilityHero("Hero has already attacked this turn.", row, output);
+        if (playerTwo.playerIsActive() && playerTwo.getHero().hasUsedAbility()) {
+            actionsErrors.printErrorAbilityHero("Hero has already attacked this turn.",
+                    row, output);
             return;
         }
 
         // Get the hero from the player
-        if (playerOne.isActive()) {
+        if (playerOne.playerIsActive()) {
             Hero hero = playerOne.getHero();
             // Check if the hero attacked the correct row
-            if ((row == 2 || row == 3) && (hero.getName().equals("Lord Royce") || hero.getName().equals("Empress Thorina"))) {
-                actionsErrors.printErrorAbilityHero("Selected row does not belong to the enemy.", row, output);
+            if ((row == 2 || row == three) && (hero.getName().equals("Lord Royce")
+                    || hero.getName().equals("Empress Thorina"))) {
+                actionsErrors.printErrorAbilityHero("Selected row does not belong to the enemy.",
+                        row, output);
                 return;
             }
         }
 
-        if (playerTwo.isActive()) {
+        if (playerTwo.playerIsActive()) {
             Hero hero = playerTwo.getHero();
             // Check if the hero attacked the correct row
-            if ((row == 0 || row == 1) && (hero.getName().equals("Lord Royce") || hero.getName().equals("Empress Thorina"))) {
-                actionsErrors.printErrorAbilityHero("Selected row does not belong to the enemy.", row, output);
+            if ((row == 0 || row == 1) && (hero.getName().equals("Lord Royce")
+                    || hero.getName().equals("Empress Thorina"))) {
+                actionsErrors.printErrorAbilityHero("Selected row does not belong to the enemy.",
+                        row, output);
                 return;
             }
         }
 
-        if (playerOne.isActive()) {
+        if (playerOne.playerIsActive()) {
             Hero hero = playerOne.getHero();
             // Check if the hero attacked the correct row
-            if ((row == 0 || row == 1) && (hero.getName().equals("General Kocioraw") || hero.getName().equals("King Mudface"))) {
-                actionsErrors.printErrorAbilityHero("Selected row does not belong to the current player.", row, output);
+            if ((row == 0 || row == 1) && (hero.getName().equals("General Kocioraw")
+                    || hero.getName().equals("King Mudface"))) {
+                actionsErrors.printErrorAbilityHero("Selected row does not "
+                                + "belong to the current player.",
+                        row, output);
                 return;
             }
         }
 
-        if (playerTwo.isActive()) {
+        if (playerTwo.playerIsActive()) {
             Hero hero = playerTwo.getHero();
             // Check if the hero attacked the correct row
-            if ((row == 2 || row == 3) && (hero.getName().equals("General Kocioraw") || hero.getName().equals("King Mudface"))) {
-                actionsErrors.printErrorAbilityHero("Selected row does not belong to the current player.", row, output);
+            if ((row == 2 || row == three) && (hero.getName().equals("General Kocioraw")
+                    || hero.getName().equals("King Mudface"))) {
+                actionsErrors.printErrorAbilityHero("Selected row does not "
+                                + "belong to the current player.",
+                        row, output);
                 return;
             }
         }
 
         Hero hero;
-        if (playerOne.isActive()) {
+        if (playerOne.playerIsActive()) {
             hero = playerOne.getHero();
 
             // Set the hero to have used the ability this turn
-            hero.hasUsedAbility = true;
+            hero.setHasUsedAbility(true);
 
             // Decrease the mana of the player
             playerOne.decreaseMana(playerOne.getHero().getMana());
@@ -818,7 +886,7 @@ public class GameGwentStone {
             hero = playerTwo.getHero();
 
             // Set the hero to have used the ability this turn
-            hero.hasUsedAbility = true;
+            hero.setHasUsedAbility(true);
 
             // Decrease the mana of the player
             playerTwo.decreaseMana(playerTwo.getHero().getMana());
@@ -843,7 +911,7 @@ public class GameGwentStone {
      *
      * @param output the output to be populated with the number of wins for player one
      */
-    public void getPlayerOneWins(ArrayNode output) {
+    public void getPlayerOneWins(final ArrayNode output) {
         ObjectNode getPlayerOneWinsOutput = output.addObject();
         getPlayerOneWinsOutput.put("command", "getPlayerOneWins");
         getPlayerOneWinsOutput.put("output", playerOneWins);
@@ -854,7 +922,7 @@ public class GameGwentStone {
      *
      * @param output the output to be populated with the number of wins for player two
      */
-    public void getPlayerTwoWins(ArrayNode output) {
+    public void getPlayerTwoWins(final ArrayNode output) {
         ObjectNode getPlayerTwoWinsOutput = output.addObject();
         getPlayerTwoWinsOutput.put("command", "getPlayerTwoWins");
         getPlayerTwoWinsOutput.put("output", playerTwoWins);
@@ -865,7 +933,7 @@ public class GameGwentStone {
      *
      * @param output the output to be populated with the total number of games
      */
-    public void getTotalGamesPlayed(ArrayNode output) {
+    public void getTotalGamesPlayed(final ArrayNode output) {
         ObjectNode getTotalGamesPlayedOutput = output.addObject();
         getTotalGamesPlayedOutput.put("command", "getTotalGamesPlayed");
         getTotalGamesPlayedOutput.put("output", totalGamesPlayed);

@@ -11,13 +11,13 @@ public class Minion extends Card {
      * Indicates whether the minion has attacked during the current
      * player's turn.
      */
-    public boolean hasAttackedThisTurn = false;
+    private boolean hasAttackedThisTurn = false;
 
     /**
      * Indicates whether the minion has used its special ability during the
      * current player's turn.
      */
-    public boolean usedAbilityThisTurn = false;
+    private boolean usedAbilityThisTurn = false;
 
     /**
      * Constructs a Minion with specified attributes.
@@ -30,7 +30,9 @@ public class Minion extends Card {
      * @param isFrozen     the frozen status of the minion
      * @param colors       the colors associated with the minion
      */
-    public Minion(int mana, int health, int attackDamage, String description, String name, boolean isFrozen, ArrayList<String> colors) {
+    public Minion(final int mana, final int health, final int attackDamage,
+                  final String description, final String name, final boolean isFrozen,
+                  final ArrayList<String> colors) {
         super();
         this.setMana(mana);
         this.setHealth(health);
@@ -41,7 +43,6 @@ public class Minion extends Card {
         this.setColors(colors);
     }
 
-
     /**
      * Checks if the minion is a tank minion.
      *
@@ -49,7 +50,7 @@ public class Minion extends Card {
      * false otherwise
      */
     public boolean isTank() {
-        return name.equals("Goliath") || name.equals("Warden");
+        return getName().equals("Goliath") || getName().equals("Warden");
     }
 
     /**
@@ -58,7 +59,8 @@ public class Minion extends Card {
      * @return true if the minion is one of the specified front-row types, false otherwise
      */
     public boolean isFrontRow() {
-        return name.equals("Goliath") || name.equals("Warden") || name.equals("Miraj") || name.equals("The Ripper");
+        return getName().equals("Goliath") || getName().equals("Warden")
+                || getName().equals("Miraj") || getName().equals("The Ripper");
     }
 
     /**
@@ -71,11 +73,29 @@ public class Minion extends Card {
     }
 
     /**
+     * Sets whether the minion has attacked in the current turn of the player.
+     *
+     * @param hasAttackedThisTurn true if the minion has attacked this turn, false otherwise
+     */
+    public void setHasAttackedThisTurn(final boolean hasAttackedThisTurn) {
+        this.hasAttackedThisTurn = hasAttackedThisTurn;
+    }
+
+    /**
      * Checks if the minion has used its ability in the current turn of the player.
      *
      * @return true if the minion has used its ability this turn, false otherwise
      */
     public boolean usedAbilityThisTurn() {
         return usedAbilityThisTurn;
+    }
+
+    /**
+     * Sets whether the minion has used its ability in the current turn of the player.
+     *
+     * @param usedAbilityThisTurn true if the minion has used its ability this turn, false otherwise
+     */
+    public void setUsedAbilityThisTurn(final boolean usedAbilityThisTurn) {
+        this.usedAbilityThisTurn = usedAbilityThisTurn;
     }
 }
