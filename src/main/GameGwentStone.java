@@ -30,11 +30,11 @@ import cardsactions.Abilities;
  */
 public class GameGwentStone {
 
-    private Player playerOne = new Player();
-    private Player playerTwo = new Player();
-    private GameTable gameTable = new GameTable();
-    private CardsActionsErrors actionsErrors = new CardsActionsErrors();
-    private Abilities abilities = new Abilities();
+    private final Player playerOne = new Player();
+    private final Player playerTwo = new Player();
+    private final GameTable gameTable = new GameTable();
+    private final CardsActionsErrors actionsErrors = new CardsActionsErrors();
+    private final Abilities abilities = new Abilities();
     private int playerOneWins = 0;
     private int playerTwoWins = 0;
     private int totalGamesPlayed = 0;
@@ -67,7 +67,7 @@ public class GameGwentStone {
             playerTwo.resetPlayer();
 
             processDataForEachPlayer(input, game.getStartGame());
-            startNewGame(input, output, game);
+            startNewGame(output, game);
         }
     }
 
@@ -75,11 +75,10 @@ public class GameGwentStone {
      * Starts a new game by processing the actions performed by the players.
      * Selects the action to be performed based on the command received.
      *
-     * @param input  the input data containing all the data needed to play the game
      * @param output the output to be populated with the game results
      * @param game   the game input containing the actions to be performed
      */
-    public void startNewGame(final Input input, final ArrayNode output, final GameInput game) {
+    public void startNewGame(final ArrayNode output, final GameInput game) {
         int completedPlayerTurns = 0;
         int playerTurn = game.getStartGame().getStartingPlayer();
         manaIncrement = 1;
@@ -162,7 +161,7 @@ public class GameGwentStone {
     /**
      * Handles the end of a round by updating the mana, the players' turns and the game table.
      *
-     * @param completedPlayerTurns
+     * @param completedPlayerTurns the number of completed turns
      */
     private void endRoundChanges(final int completedPlayerTurns) {
 
@@ -276,7 +275,6 @@ public class GameGwentStone {
         } else {
             deck = playerTwo.getCardsInDeck();
         }
-
 
         // Put the output in a JSON structure
         ObjectNode getPlayerDeckOutput = output.addObject();
