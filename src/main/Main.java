@@ -73,7 +73,6 @@ public final class Main {
         GameGwentStone newGame = new GameGwentStone();
         newGame.startPlayingTheGame(inputData, output);
 
-
         /*
          * TODO Implement your function here
          *
